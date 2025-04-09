@@ -25,4 +25,24 @@ public class CategoryService {
 	{
 		return catRepo.viewAllCategory();
 	}
+	
+	public Category searchCategoryById(int id)
+	{
+		return catRepo.searchCategoryById(id);
+	}
+	
+	public boolean isDeleteCategoryById(int catid)
+	{
+		return catRepo.isDeleteCategoryById(catid);
+	}
+	
+	public boolean isUpdateCategory(Category category)
+	{
+		return catRepo.isUpdateCategory(category);
+	}
+	
+	public List<Category> searchCategoryByPattern(String pattern)
+	{
+		return catRepo.searchCategoryByPattern(pattern);
+	}
 }
