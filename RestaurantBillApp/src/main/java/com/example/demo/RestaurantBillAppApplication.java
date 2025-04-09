@@ -10,5 +10,4 @@ public class RestaurantBillAppApplication {
 		SpringApplication.run(RestaurantBillAppApplication.class, args);
 		//System.out.println("Hello Everyone....");
 	}
-
 }
