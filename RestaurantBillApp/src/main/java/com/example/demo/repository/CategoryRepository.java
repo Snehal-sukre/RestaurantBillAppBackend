@@ -48,7 +48,7 @@ public class CategoryRepository {
 	
 	public List<Category> viewAllCategory()
 	{
-		list =jdbcTemplate.query("select *from category", new RowMapper<Category>()
+		list =jdbcTemplate.query("select *from category order by id", new RowMapper<Category>()
 				{
 					@Override
 					public Category mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -63,7 +63,7 @@ public class CategoryRepository {
 	
 	public Category searchCategoryById(int id)
 	{
-		list=jdbcTemplate.query("select *from employee where id=?",new Object[] {id}, new RowMapper()
+		list=jdbcTemplate.query("select *from category where id=?",new Object[] {id}, new RowMapper()
 				{
 					@Override
 					public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -109,5 +109,4 @@ public class CategoryRepository {
 				});
 		return list.size()>0?list:null;
 	}
- 
 }
