@@ -38,4 +38,9 @@ public class MenuService {
 	{
 		return menuRepo.isUpdateMenu(menu);
 	}
+	
+	public List<Menu> searchMenuByPattern(String pattern)
+	{
+		return menuRepo.searchMenuByPattern(pattern);
+	}
 }

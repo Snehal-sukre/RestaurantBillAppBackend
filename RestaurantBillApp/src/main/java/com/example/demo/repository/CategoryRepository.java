@@ -107,6 +107,6 @@ public class CategoryRepository {
 						return cat;
 					}
 				});
-		return list.size()>0?list:null;
+		return list;
 	}
 }
