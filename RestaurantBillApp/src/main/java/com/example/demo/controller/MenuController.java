@@ -2,6 +2,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import com.example.demo.model.Menu;
 import com.example.demo.service.MenuService;
 
 @RestController
+@CrossOrigin("http://localhost:5173")
 public class MenuController {
 	
 	@Autowired
@@ -87,6 +89,20 @@ public class MenuController {
 		else
 		{
 			throw new MenuNotFoundException("Menu Not Found Using Id: "+menu.getId());
+		}
+	}
+	
+	@GetMapping("/searchMenu/{pattern}")
+	public List<Menu> searchMenuByPattern(@PathVariable("pattern") String pattern)
+	{
+		List<Menu> list=menuService.searchMenuByPattern(pattern);
+		if(list.size()!=0)
+		{
+			return list;
+		}
+		else
+		{
+			throw new MenuNotFoundException("Menu Not Found");
 		}
 	}
 }

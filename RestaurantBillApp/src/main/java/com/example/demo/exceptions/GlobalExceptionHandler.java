@@ -21,4 +21,11 @@ public class GlobalExceptionHandler {
 	{
 		return new ErrorMessage(HttpStatus.NOT_FOUND.value(), exception.getMessage());
 	}
+	
+	@ExceptionHandler(value=StaffNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public @ResponseBody ErrorMessage handleStaffException(StaffNotFoundException exception)
+	{
+		return new ErrorMessage(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+	}
 }

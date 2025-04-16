@@ -47,7 +47,7 @@ public class MenuRepository {
 	
 	public List<Menu> viewAllMenus()
 	{
-		list=jdbcTemplate.query("select *from menu order by id", new RowMapper<Menu>()
+		list=jdbcTemplate.query("select m.id, m.item_name,m.category_id, c.name as category_name, m.price, m.description from menu m inner join category c on m.category_id=c.id order by m.id", new RowMapper<Menu>()
 				{
 					@Override
 					public Menu mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -55,8 +55,9 @@ public class MenuRepository {
 						menu.setId(rs.getInt(1));
 						menu.setName(rs.getString(2));
 						menu.setCategoryId(rs.getInt(3));
-						menu.setPrice(rs.getBigDecimal(4));
-						menu.setDescription(rs.getString(5));
+						menu.setCategoryName(rs.getString(4));
+						menu.setPrice(rs.getBigDecimal(5));
+						menu.setDescription(rs.getString(6));
 						return menu;
 					}
 			
@@ -102,5 +103,24 @@ public class MenuRepository {
 					}
 				});
 		return value>0?true:false;
+	}
+	
+	public List<Menu> searchMenuByPattern(String pattern)
+	{
+		List<Menu> list=jdbcTemplate.query("select m.id, m.item_name, m.category_id, c.name as category_name, m.price, m.description from menu m inner join category c on m.category_id=c.id where m.item_name like '%"+pattern+"%' order by m.id", new RowMapper<Menu>()
+				{
+					@Override
+					public Menu mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Menu menu=new Menu();
+						menu.setId(rs.getInt(1));
+						menu.setName(rs.getString(2));
+						menu.setCategoryId(rs.getInt(3));
+						menu.setCategoryName(rs.getString(4));
+						menu.setPrice(rs.getBigDecimal(5));
+						menu.setDescription(rs.getString(6));
+						return menu;
+					}
+				});
+		return list;
 	}
 }
