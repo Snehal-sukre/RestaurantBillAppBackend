@@ -73,7 +73,7 @@ public class StaffController {
 		boolean b=staffService.isDeleteStaffById(id);
 		if(b)
 		{
-			return "Menu Deleted Successfully";
+			return "Staff Deleted Successfully";
 		}
 		else
 		{
