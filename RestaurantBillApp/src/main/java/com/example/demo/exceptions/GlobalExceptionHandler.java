@@ -28,4 +28,11 @@ public class GlobalExceptionHandler {
 	{
 		return new ErrorMessage(HttpStatus.NOT_FOUND.value(), exception.getMessage());
 	}
+	
+	@ExceptionHandler(value=DiningTableNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public @ResponseBody ErrorMessage handleDiningTableException(DiningTableNotFoundException exception)
+	{
+		return new ErrorMessage(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+	}
 }

@@ -6,5 +6,5 @@ import lombok.Data;
 public class DiningTable {
 	private int id;
 	private int capacity;
-	private String status;
+	private String availability;
 }
