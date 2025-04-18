@@ -21,15 +21,15 @@ public class StaffRepository {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
-	public boolean isStaffExists(String email)
+	public boolean isStaffExists(String email, String contact)
 	{
-		int count=jdbcTemplate.queryForObject("select count(*) from staff where email=?", new Object[] {email}, Integer.class);
+		int count=jdbcTemplate.queryForObject("select count(*) from staff where email=? or contact_no=?", new Object[] {email, contact}, Integer.class);
 		return count>0;
 	}
 	
 	public boolean isAddNewStaff(Staff staff)
 	{
-		if(isStaffExists(staff.getEmail()))
+		if(isStaffExists(staff.getEmail(), staff.getContact()))
 		{
 			return false;
 		}
