@@ -32,7 +32,7 @@ public class MenuRepository {
 		{
 			return false;
 		}
-		int value=jdbcTemplate.update("insert into menu values ('0', ?,?,?,?)", new PreparedStatementSetter()
+		int value=jdbcTemplate.update("insert into menu values ('0', ?,?,?,?,?)", new PreparedStatementSetter()
 				{
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -40,14 +40,14 @@ public class MenuRepository {
 						ps.setInt(2, menu.getCategoryId());
 						ps.setBigDecimal(3, menu.getPrice());
 						ps.setString(4, menu.getDescription());
-					}
+						ps.setString(5, menu.getImage());					}
 				});
 		return value>0;
 	}
 	
 	public List<Menu> viewAllMenus()
 	{
-		list=jdbcTemplate.query("select m.id, m.item_name,m.category_id, c.name as category_name, m.price, m.description from menu m inner join category c on m.category_id=c.id order by m.id", new RowMapper<Menu>()
+		list=jdbcTemplate.query("select m.id, m.item_name,m.category_id, c.name as category_name, m.price, m.description, m.image from menu m inner join category c on m.category_id=c.id order by m.id", new RowMapper<Menu>()
 				{
 					@Override
 					public Menu mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -58,6 +58,7 @@ public class MenuRepository {
 						menu.setCategoryName(rs.getString(4));
 						menu.setPrice(rs.getBigDecimal(5));
 						menu.setDescription(rs.getString(6));
+						menu.setImage(rs.getString(7));
 						return menu;
 					}
 			
@@ -77,6 +78,7 @@ public class MenuRepository {
 						menu.setCategoryId(rs.getInt(3));
 						menu.setPrice(rs.getBigDecimal(4));
 						menu.setDescription(rs.getString(5));
+						menu.setImage(rs.getString(6));
 						return menu;
 					}
 				});
@@ -91,7 +93,7 @@ public class MenuRepository {
 	
 	public boolean isUpdateMenu(Menu menu)
 	{
-		int value=jdbcTemplate.update("update menu set item_name=?, category_id=?, price=?, description=? where id=?", new PreparedStatementSetter()
+		int value=jdbcTemplate.update("update menu set item_name=?, category_id=?, price=?, description=?, image=? where id=?", new PreparedStatementSetter()
 				{
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -99,7 +101,8 @@ public class MenuRepository {
 						ps.setInt(2, menu.getCategoryId());
 						ps.setBigDecimal(3, menu.getPrice());
 						ps.setString(4, menu.getDescription());
-						ps.setInt(5, menu.getId());
+						ps.setString(5, menu.getImage());
+						ps.setInt(6, menu.getId());
 					}
 				});
 		return value>0?true:false;
@@ -107,7 +110,7 @@ public class MenuRepository {
 	
 	public List<Menu> searchMenuByPattern(String pattern)
 	{
-		List<Menu> list=jdbcTemplate.query("select m.id, m.item_name, m.category_id, c.name as category_name, m.price, m.description from menu m inner join category c on m.category_id=c.id where m.item_name like '%"+pattern+"%' order by m.id", new RowMapper<Menu>()
+		List<Menu> list=jdbcTemplate.query("select m.id, m.item_name, m.category_id, c.name as category_name, m.price, m.description, m.image from menu m inner join category c on m.category_id=c.id where m.item_name like '%"+pattern+"%' order by m.id", new RowMapper<Menu>()
 				{
 					@Override
 					public Menu mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -118,6 +121,7 @@ public class MenuRepository {
 						menu.setCategoryName(rs.getString(4));
 						menu.setPrice(rs.getBigDecimal(5));
 						menu.setDescription(rs.getString(6));
+						menu.setImage(rs.getString(7));
 						return menu;
 					}
 				});
