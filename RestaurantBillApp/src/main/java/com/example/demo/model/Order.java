@@ -16,4 +16,5 @@ public class Order {
 	private String menuName;
 	private int quantity;
 	private BigDecimal totalAmt;
+	private String orderStatus;
 }
