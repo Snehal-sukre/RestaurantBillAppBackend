@@ -26,24 +26,24 @@ public class MenuRepository {
 		return count>0;
 	}
 	
-	public boolean isAddNewMenu(Menu menu)
-	{
-		if(isMenuExists(menu.getName()))
-		{
-			return false;
-		}
-		int value=jdbcTemplate.update("insert into menu values ('0', ?,?,?,?,?)", new PreparedStatementSetter()
-				{
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, menu.getName());
-						ps.setInt(2, menu.getCategoryId());
-						ps.setBigDecimal(3, menu.getPrice());
-						ps.setString(4, menu.getDescription());
-						ps.setString(5, menu.getImage());					}
-				});
-		return value>0;
+	public boolean isAddNewMenu(Menu menu) {
+	    if (isMenuExists(menu.getName())) {
+	        return false;
+	    }
+	    // Updated insert query without the 'id' field as it is auto-increment
+	    int value = jdbcTemplate.update("insert into menu (item_name, category_id, price, image, description) values (?, ?, ?, ?, ?)", new PreparedStatementSetter() {
+	        @Override
+	        public void setValues(PreparedStatement ps) throws SQLException {
+	            ps.setString(1, menu.getName());
+	            ps.setInt(2, menu.getCategoryId());
+	            ps.setBigDecimal(3, menu.getPrice());
+	            ps.setString(4, menu.getImage());
+	            ps.setString(5, menu.getDescription());
+	        }
+	    });
+	    return value > 0;
 	}
+	
 	
 	public List<Menu> viewAllMenus()
 	{
@@ -91,23 +91,22 @@ public class MenuRepository {
 		return value>0?true:false;
 	}
 	
-	public boolean isUpdateMenu(Menu menu)
-	{
-		int value=jdbcTemplate.update("update menu set item_name=?, category_id=?, price=?, description=?, image=? where id=?", new PreparedStatementSetter()
-				{
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, menu.getName());
-						ps.setInt(2, menu.getCategoryId());
-						ps.setBigDecimal(3, menu.getPrice());
-						ps.setString(4, menu.getDescription());
-						ps.setString(5, menu.getImage());
-						ps.setInt(6, menu.getId());
-					}
-				});
-		return value>0?true:false;
+	public boolean isUpdateMenu(Menu menu) {
+	    // Update query for the correct fields
+	    int value = jdbcTemplate.update("update menu set item_name=?, category_id=?, price=?, description=?, image=? where id=?", new PreparedStatementSetter() {
+	        @Override
+	        public void setValues(PreparedStatement ps) throws SQLException {
+	            ps.setString(1, menu.getName());          // item_name
+	            ps.setInt(2, menu.getCategoryId());       // category_id
+	            ps.setBigDecimal(3, menu.getPrice());     // price
+	            ps.setString(4, menu.getDescription());   // description (correctly mapped here)
+	            ps.setString(5, menu.getImage());         // image (correctly mapped here)
+	            ps.setInt(6, menu.getId());               // id (used to identify the record to update)
+	        }
+	    });
+	    return value > 0;
 	}
-	
+
 	public List<Menu> searchMenuByPattern(String pattern)
 	{
 		List<Menu> list=jdbcTemplate.query("select m.id, m.item_name, m.category_id, c.name as category_name, m.price, m.description, m.image from menu m inner join category c on m.category_id=c.id where m.item_name like '%"+pattern+"%' order by m.id", new RowMapper<Menu>()

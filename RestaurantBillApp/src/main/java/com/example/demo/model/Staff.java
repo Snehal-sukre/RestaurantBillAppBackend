@@ -8,7 +8,7 @@ import lombok.Data;
 public class Staff {
 	private int id;
 	private String name;
+	private String email;
 	private String contact;
 	private BigDecimal salary;
-	private String email;
 }
