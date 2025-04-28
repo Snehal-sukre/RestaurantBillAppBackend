@@ -38,9 +38,9 @@ public class StaffRepository {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, staff.getName());
-						ps.setString(2, staff.getContact());
-						ps.setBigDecimal(3, staff.getSalary());
-						ps.setString(4, staff.getEmail());
+						ps.setString(2, staff.getEmail());
+						ps.setString(3, staff.getContact());
+						ps.setBigDecimal(4, staff.getSalary());
 					}
 				});
 		return value>0;
@@ -55,9 +55,9 @@ public class StaffRepository {
 						Staff staff=new Staff();
 						staff.setId(rs.getInt(1));
 						staff.setName(rs.getString(2));
-						staff.setContact(rs.getString(3));
-						staff.setSalary(rs.getBigDecimal(4));
-						staff.setEmail(rs.getString(5));
+						staff.setEmail(rs.getString(3));
+						staff.setContact(rs.getString(4));
+						staff.setSalary(rs.getBigDecimal(5));
 						return staff;
 					}
 				});
@@ -73,9 +73,9 @@ public class StaffRepository {
 						Staff staff=new Staff();
 						staff.setId(rs.getInt(1));
 						staff.setName(rs.getString(2));
-						staff.setContact(rs.getString(3));
-						staff.setSalary(rs.getBigDecimal(4));
-						staff.setEmail(rs.getString(5));
+						staff.setEmail(rs.getString(3));
+						staff.setContact(rs.getString(4));
+						staff.setSalary(rs.getBigDecimal(5));
 						return staff;
 					}
 				});
@@ -90,14 +90,14 @@ public class StaffRepository {
 	
 	public boolean isUpdateStaff(Staff staff)
 	{
-		int value=jdbcTemplate.update("update staff set name=?, contact_no=?, salary=?, email=? where staff_id=?", new PreparedStatementSetter()
+		int value=jdbcTemplate.update("update staff set name=?, email=?, contact_no=?, salary=? where staff_id=?", new PreparedStatementSetter()
 				{
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, staff.getName());
-						ps.setString(2, staff.getContact());
-						ps.setBigDecimal(3, staff.getSalary());
-						ps.setString(4, staff.getEmail());
+						ps.setString(2, staff.getEmail());
+						ps.setString(3, staff.getContact());
+						ps.setBigDecimal(4, staff.getSalary());
 						ps.setInt(5, staff.getId());
 					}
 				});
@@ -113,9 +113,9 @@ public class StaffRepository {
 						Staff staff=new Staff();
 						staff.setId(rs.getInt(1));
 						staff.setName(rs.getString(2));
-						staff.setContact(rs.getString(3));
-						staff.setSalary(rs.getBigDecimal(4));
-						staff.setEmail(rs.getString(5));
+						staff.setEmail(rs.getString(3));
+						staff.setContact(rs.getString(4));
+						staff.setSalary(rs.getBigDecimal(5));
 						return staff;
 					}
 				});	
