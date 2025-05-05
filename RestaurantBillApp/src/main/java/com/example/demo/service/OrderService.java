@@ -41,6 +41,10 @@ public class OrderService {
     	return orderRepo.viewAllOrders();
     }
     
+    public List<OrderView> viewOrdersByStaffId(int staffId) {
+        return orderRepo.viewOrdersByStaffId(staffId);
+    }
+    
     public void updateOrderStatus(int orderId, String newStatus) {
         orderRepo.updateOrderStatus(orderId, newStatus);
     }

@@ -8,6 +8,7 @@ public class OrderItem {
     private int itemId;
     private int orderId;
     private int menuId;
+    private String itemName;
     private int quantity;
     private BigDecimal totalAmt;
 }

@@ -81,6 +81,18 @@ public class DiningTableController {
 		}
 	}
 	
+	@PutMapping(path = "/{id}/availability", consumes = "text/plain")
+	public String updateTableAvailability(@PathVariable int id, @RequestBody String availability) {
+	    //System.out.println("Received updateTableAvailability request for ID: " + id + ", Availability: " + availability);
+	    boolean updated = dineService.updateTableAvailability(id, availability.trim()); // Use trim() to remove quotes or whitespaces
+	    if (updated) {
+	        return "Dining Table Availability Updated Successfully";
+	    } else {
+	        throw new DiningTableNotFoundException("Dining Table Not Found With Id: " + id);
+	    }
+	}
+
+	
 	@PutMapping("/updateTable")
 	public String updateTable(@RequestBody DiningTable table)
 	{
