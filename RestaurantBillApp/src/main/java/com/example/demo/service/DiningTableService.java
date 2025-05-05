@@ -34,6 +34,13 @@ public class DiningTableService {
 		return dineRepo.isDeleteTableById(id);
 	}
 	
+	public boolean updateTableAvailability(int id, String availability) {
+	    System.out.println("Updating availability for ID: " + id + " to: " + availability); // Add this line
+	    int value = dineRepo.updateAvailability(id, availability);
+	    System.out.println("Rows affected: " + value); // Add this line
+	    return value > 0;
+	}
+	
 	public boolean isUpdateTable(DiningTable table)
 	{
 		return dineRepo.isUpdateTable(table);

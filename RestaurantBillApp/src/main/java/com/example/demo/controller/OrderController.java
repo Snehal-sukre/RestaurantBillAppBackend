@@ -38,6 +38,16 @@ public class OrderController {
     	}
     }
     
+    @GetMapping("/viewStaffOrders/{staffId}")
+    public ResponseEntity<List<OrderView>> getOrdersByStaff(@PathVariable int staffId) {
+        List<OrderView> list = orderService.viewOrdersByStaffId(staffId);
+        if (list.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(list);
+        }
+    }
+    
     @PutMapping("/updateOrderStatus/{orderId}/status")
     public ResponseEntity<String> updateOrderStatus(@PathVariable int orderId, @RequestParam String status) {
         orderService.updateOrderStatus(orderId, status);

@@ -84,6 +84,15 @@ public class DiningTableRepository {
 		return value>0?true:false;
 	}
 	
+	public int updateAvailability(int id, String availability) {
+	    //System.out.println("Executing update query for ID: " + id + ", Availability: " + availability); // Add this line
+	    return jdbcTemplate.update(
+	            "update dinning_table set availability_status=? where table_id=?",
+	            availability,
+	            id
+	    );
+	}
+	
 	public boolean isUpdateTable(DiningTable table)
 	{
 		int value=jdbcTemplate.update("update dinning_table set table_id=?, capacity=?,  availability_status=? where table_id=?", new PreparedStatementSetter()

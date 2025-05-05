@@ -34,27 +34,56 @@ public class OrderRepository {
     }
     
     public List<OrderView> viewAllOrders() {
-        String sql = "SELECT om.order_id, om.table_id, om.staff_id, om.ord_date, om.total_amt, om.ord_status, " +
-                     "oi.menu_id, oi.quantity, oi.total_amt AS item_total " +
+        String sql = "SELECT om.order_id, om.table_id, s.name AS staff_name, om.ord_date, om.ord_status, " +
+                     "m.item_name, m.price, oi.quantity " +
                      "FROM order_master om " +
+                     "JOIN staff s ON om.staff_id = s.staff_id " +
                      "JOIN order_items oi ON om.order_id = oi.order_id " +
+                     "JOIN menu m ON oi.menu_id = m.id " +
                      "ORDER BY om.order_id";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             OrderView order = new OrderView();
             order.setOrderId(rs.getInt("order_id"));
             order.setTableId(rs.getInt("table_id"));
-            order.setStaffId(rs.getInt("staff_id"));
+            order.setStaffName(rs.getString("staff_name")); // use staffName
             order.setOrdDate(rs.getDate("ord_date"));
-            order.setOrderTotal(rs.getBigDecimal("total_amt"));
+            order.setOrderStatus(rs.getString("ord_status"));
+            order.setItemName(rs.getString("item_name"));   // item name
+            order.setPrice(rs.getBigDecimal("price"));      // rate or price
+            order.setQuantity(rs.getInt("quantity"));       // quantity
+            return order;
+        });
+    }
+    
+    public List<OrderView> viewOrdersByStaffId(int staffId) {
+        String sql = "SELECT om.order_id, om.table_id, om.staff_id, s.name AS staff_name, om.ord_date, " +
+                     "om.ord_status, m.id AS menu_id, m.item_name, m.price, oi.quantity, " +
+                     "(m.price * oi.quantity) AS item_total " +
+                     "FROM order_master om " +
+                     "JOIN staff s ON om.staff_id = s.staff_id " +
+                     "JOIN order_items oi ON om.order_id = oi.order_id " +
+                     "JOIN menu m ON oi.menu_id = m.id " +
+                     "WHERE om.staff_id = ? " +
+                     "ORDER BY om.order_id";
+
+        return jdbcTemplate.query(sql, new Object[]{staffId}, (rs, rowNum) -> {
+            OrderView order = new OrderView();
+            order.setOrderId(rs.getInt("order_id"));
+            order.setTableId(rs.getInt("table_id"));
+            order.setStaffId(rs.getInt("staff_id"));
+            order.setStaffName(rs.getString("staff_name"));
+            order.setOrdDate(rs.getDate("ord_date"));
             order.setOrderStatus(rs.getString("ord_status"));
             order.setMenuId(rs.getInt("menu_id"));
+            order.setItemName(rs.getString("item_name"));
+            order.setPrice(rs.getBigDecimal("price"));
             order.setQuantity(rs.getInt("quantity"));
             order.setItemTotal(rs.getBigDecimal("item_total"));
             return order;
         });
     }
-    
+
     public void updateOrderStatus(int orderId, String newStatus) {
         String sql = "UPDATE order_master SET ord_status = ? WHERE order_id = ?";
         jdbcTemplate.update(sql, newStatus, orderId);
