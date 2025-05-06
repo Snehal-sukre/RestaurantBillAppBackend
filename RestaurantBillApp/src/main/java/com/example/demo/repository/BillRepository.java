@@ -40,10 +40,9 @@ public class BillRepository {
         return jdbcTemplate.queryForObject(sql, String.class, orderId);
     }
 
-    // Get the table number where the order was placed
+    // ✅ Updated to fetch table_id directly from order_master (or bill if stored there)
     public int getTableNumber(int orderId) {
-        String sql = "SELECT dt.table_id FROM order_master om " +
-                     "JOIN dinning_table dt ON om.table_id = dt.table_id WHERE om.order_id = ?";
+        String sql = "SELECT table_id FROM order_master WHERE order_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, orderId);
     }
 
@@ -56,14 +55,17 @@ public class BillRepository {
     // Generate a bill for the order only if it doesn't already exist
     @Transactional
     public int generateBill(Bill bill) {
-        // Check if a bill already exists for the given order ID
+        // Lock the order row to prevent concurrent insertions for same order
+        String lockSql = "SELECT * FROM order_master WHERE order_id = ? FOR UPDATE";
+        jdbcTemplate.queryForList(lockSql, bill.getOrderId());
+
+        // Now check if bill already exists
         Bill existingBill = getBillByOrderId(bill.getOrderId());
         if (existingBill != null) {
-            // If a bill already exists, return the existing bill ID
             return existingBill.getBillId();
         }
 
-        // If no bill exists, proceed to insert the new bill
+        // Insert new bill
         String sql = "INSERT INTO bill (order_id, total_amount, discount, cgst, sgst, grand_total, bill_date) " +
                      "VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
@@ -76,14 +78,14 @@ public class BillRepository {
             bill.getGrandTotal()
         );
 
-        // Return the generated bill ID
         return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
     }
 
-    // Get all the bills
+    // ✅ UPDATED getAllBills() with staff name, table ID, and items
     public List<Bill> getAllBills() {
-        String sql = "SELECT * FROM bill";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        String billSql = "SELECT * FROM bill";
+
+        return jdbcTemplate.query(billSql, (rs, rowNum) -> {
             Bill bill = new Bill();
             bill.setBillId(rs.getInt("bill_id"));
             bill.setOrderId(rs.getInt("order_id"));
@@ -93,7 +95,39 @@ public class BillRepository {
             bill.setSgst(rs.getDouble("sgst"));
             bill.setGrandTotal(rs.getDouble("grand_total"));
             bill.setBillDate(rs.getTimestamp("bill_date"));
+
+            int orderId = rs.getInt("order_id");
+
+            try {
+                bill.setStaffname(getWaiterName(orderId));
+            } catch (Exception e) {
+                bill.setStaffname("N/A");
+            }
+
+            try {
+                bill.setTableId(getTableNumber(orderId));
+            } catch (Exception e) {
+                bill.setTableId(0);
+            }
+
+            bill.setItems(getOrderItems(orderId));
+
             return bill;
+        });
+    }
+
+    private List<OrderItem> getItemsByOrderId(int orderId) {
+        String sql = "SELECT m.item_name, od.quantity, od.total_amt " +
+                     "FROM order_details od " +
+                     "JOIN menu m ON od.menu_id = m.menu_id " +
+                     "WHERE od.order_id = ?";
+
+        return jdbcTemplate.query(sql, new Object[]{orderId}, (rs, rowNum) -> {
+            OrderItem item = new OrderItem();
+            item.setItemName(rs.getString("item_name"));
+            item.setQuantity(rs.getInt("quantity"));
+            item.setTotalAmt(rs.getBigDecimal("total_amt"));
+            return item;
         });
     }
 
@@ -110,9 +144,13 @@ public class BillRepository {
         jdbcTemplate.update(sql, orderId);
     }
 
-    // Get the bill by the order ID
+    // Get the bill by the order ID and include table number
     public Bill getBillByOrderId(int orderId) {
-        String sql = "SELECT * FROM bill WHERE order_id = ?";
+        String sql = "SELECT b.*, om.table_id " +
+                     "FROM bill b " +
+                     "JOIN order_master om ON b.order_id = om.order_id " +
+                     "WHERE b.order_id = ?";
+
         List<Bill> bills = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Bill bill = new Bill();
             bill.setBillId(rs.getInt("bill_id"));
@@ -123,6 +161,7 @@ public class BillRepository {
             bill.setSgst(rs.getDouble("sgst"));
             bill.setGrandTotal(rs.getDouble("grand_total"));
             bill.setBillDate(rs.getTimestamp("bill_date"));
+            bill.setTableId(rs.getInt("table_id"));  // ✅ setting table ID here
             return bill;
         }, orderId);
 
