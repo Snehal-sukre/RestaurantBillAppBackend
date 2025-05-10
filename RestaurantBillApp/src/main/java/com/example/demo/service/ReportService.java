@@ -24,4 +24,9 @@ public class ReportService {
 	{
 		return reportRepo.getTopOrderedItems();
 	}
+	
+	public List<DailyOrdersSummary> getDailyOrdersByStaff(int staffId)
+	{
+		return reportRepo.getDailyOrdersByStaff(staffId);
+	}
 }
