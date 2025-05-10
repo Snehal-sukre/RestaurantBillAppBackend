@@ -56,5 +56,27 @@ public class ReportRepository {
 	        return item;
 	    });
 	}
+	
+	public List<DailyOrdersSummary> getDailyOrdersByStaff(int staffId) {
+	    String sql = """
+	        SELECT 
+	            ord_date AS orderDate,
+	            COUNT(order_id) AS totalOrders,
+	            SUM(total_amt) AS totalAmount
+	        FROM order_master
+	        WHERE staff_id = ?
+	        GROUP BY ord_date
+	        ORDER BY ord_date DESC
+	    """;
+
+	    return jdbcTemplate.query(sql, new Object[]{staffId}, (rs, rowNum) -> {
+	        DailyOrdersSummary dailyOrd = new DailyOrdersSummary();
+	        dailyOrd.setOrderDate(rs.getDate("orderDate").toLocalDate());
+	        dailyOrd.setTotalOrders(rs.getInt("totalOrders"));
+	        dailyOrd.setTotalAmount(rs.getBigDecimal("totalAmount"));
+	        return dailyOrd;
+	    });
+	}
+
 
 }
